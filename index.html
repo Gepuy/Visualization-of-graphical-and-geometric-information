@@ -28,14 +28,27 @@
         button:hover {
             background-color: rgba(255, 255, 255, 1);
         }
+        .inputContainer {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            height: 30px;
+            align-items: center;
+        }
     </style>
 </head>
 
 <body onload="init()">
 
     <h2>Surface of Revolution of a General Sinusoid</h2>
-    <input type="range" name="step" id="step" min ="0.05" max="0.1" step="0.01" value="0.05" onchange="update()" >
-
+    <div class="inputContainer">
+        <p>Circles: </p>
+        <input type="number" name="circleCount" id="circleCount" min ="10" max="20" step="1" value="10" onchange="update()" >
+    </div>
+    <div class="inputContainer">
+        <p>Segments: </p>
+        <input type="number" name="segmentsCount" id="segmentsCount" min ="100" max="500" step="10" value="100" onchange="update()" >
+    </div>
     <div id="canvas-holder" style="position: relative">
         <canvas width="700" height="700" id="webglcanvas"></canvas>
         <button id="zoomIn" style="position: absolute; bottom: 10px; right: 10px; width: 35px;">+</button>

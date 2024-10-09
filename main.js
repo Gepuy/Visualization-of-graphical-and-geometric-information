@@ -72,7 +72,7 @@ function initGL() {
     shProgram.iColor = gl.getUniformLocation(prog, "color");
 
     surface = new Model('Surface');
-    surface.BufferData(surface.CreateSurfaceData());
+    surface.CreateSurfaceData();
 
     gl.enable(gl.DEPTH_TEST);
 }
@@ -114,7 +114,7 @@ zoomOut.addEventListener('click', () => {
 });
 
 function update(){
-    surface.BufferData(surface.CreateSurfaceData());
+    surface.CreateSurfaceData();
     draw();
 }
 
