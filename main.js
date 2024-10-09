@@ -14,31 +14,7 @@ function deg2rad(angle) {
     return angle * Math.PI / 180;
 }
 
-// Constructor
-function Model(name) {
-    this.name = name;
-    this.iVertexBuffer = gl.createBuffer();
-    this.count = 0;
-
-    this.BufferData = function(vertices) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STREAM_DRAW);
-
-        this.count = vertices.length/3;
-    }
-
-    this.Draw = function() {
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
-        gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(shProgram.iAttribVertex);
-
-        gl.drawArrays(gl.LINE_STRIP, 0, this.count);
-    }
-}
-
-
-// Constructor
+// Constructor for ShaderProgram
 function ShaderProgram(name, program) {
     this.name = name;
     this.prog = program;
@@ -55,11 +31,7 @@ function ShaderProgram(name, program) {
     }
 }
 
-
-/* Draws a colored cube, along with a set of coordinate axes.
- * (Note that the use of the above drawPrimitive function is not an efficient
- * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
- */
+/* Draws the scene */
 function draw() {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -67,7 +39,7 @@ function draw() {
     /* Set the values of the projection transformation */
     let projection = m4.perspective(Math.PI / 8, 1, 0.1, 100);
 
-    /* Get the view matrix from the SimpleRotator object.*/
+    /* Get the view matrix from the SimpleRotator object. */
     let modelView = spaceball.getViewMatrix();
 
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
@@ -82,49 +54,13 @@ function draw() {
 
     gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection);
 
-    /* Draw the six faces of a cube, with different colors. */
+    /* Set the color */
     gl.uniform4fv(shProgram.iColor, [1, 1, 0, 1]);
 
-    surface.Draw();
+    surface.Draw();  // Draw the model
 }
 
-function CreateVertex(a, n, R, r, b) {
-    const x = r * Math.cos(b),
-        y = r * Math.sin(b),
-        z = a * Math.cos(n * Math.PI * r / R)
-    return [x, y, z]
-}
-
-// Create surface data using parametric equations
-function CreateSurfaceData() {
-    const a = 0.1, n = 1, R = 0.1
-    let vertexList = [];
-    let step = parseFloat(document.getElementById('step').value)
-
-    // Generate U polylines (fixed r, varying beta)
-    for (let r = 0; r <= 1; r += step) {
-        for (let beta = 0; beta < 360; beta += step) {
-            vertexList.push(...CreateVertex(a, n, R, r, deg2rad(beta)));
-        }
-    }
-
-    // Generate V polylines (fixed beta, varying r)
-    for (let beta = 0; beta < 2 * Math.PI; beta += step) {
-        for (let r = 0; r <= 1; r += step) {
-            vertexList.push(...CreateVertex(a, n, R, r, beta));
-        }
-    }
-
-    return vertexList;
-}
-
-function update(){
-    surface.BufferData(CreateSurfaceData());
-    draw();
-}
-
-
-/* Initialize the WebGL context. Called from init() */
+/* Initialize the WebGL context */
 function initGL() {
     let prog = createProgram(gl, vertexShaderSource, fragmentShaderSource);
 
@@ -136,20 +72,12 @@ function initGL() {
     shProgram.iColor = gl.getUniformLocation(prog, "color");
 
     surface = new Model('Surface');
-    surface.BufferData(CreateSurfaceData());
+    surface.BufferData(surface.CreateSurfaceData());
 
     gl.enable(gl.DEPTH_TEST);
 }
 
-
-/* Creates a program for use in the WebGL context gl, and returns the
- * identifier for that program.  If an error occurs while compiling or
- * linking the program, an exception of type Error is thrown.  The error
- * string contains the compilation or linking error.  If no error occurs,
- * the program identifier is the return value of the function.
- * The second and third parameters are strings that contain the
- * source code for the vertex shader and for the fragment shader.
- */
+/* Creates a program */
 function createProgram(gl, vShader, fShader) {
     let vsh = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vsh, vShader);
@@ -185,9 +113,12 @@ zoomOut.addEventListener('click', () => {
     draw();
 });
 
-/**
- * initialization function that will be called when the page has loaded
- */
+function update(){
+    surface.BufferData(surface.CreateSurfaceData());
+    draw();
+}
+
+/* Initialize the app */
 function init() {
     let canvas;
     try {
