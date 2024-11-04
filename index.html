@@ -4,8 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-
-    <title>PA#1</title>
+    <title>PA#2</title>
     <style>
         body {
             background-color: #EEEEEE;
@@ -28,6 +27,7 @@
         button:hover {
             background-color: rgba(255, 255, 255, 1);
         }
+
         .inputContainer {
             display: flex;
             flex-direction: row;
@@ -39,28 +39,42 @@
 </head>
 
 <body onload="init()">
-
     <h2>Surface of Revolution of a General Sinusoid</h2>
     <div class="inputContainer">
         <p>Circles: </p>
-        <input type="number" name="circleCount" id="circleCount" min ="10" max="20" step="1" value="10" onchange="update()" >
+        <input type="number" name="circleCount" id="circleCount" min="10" max="20" step="1" value="10"
+            onchange="update()">
     </div>
+
     <div class="inputContainer">
         <p>Segments: </p>
-        <input type="number" name="segmentsCount" id="segmentsCount" min ="100" max="500" step="10" value="100" onchange="update()" >
+        <input type="number" name="segmentsCount" id="segmentsCount" min="100" max="500" step="10" value="500"
+            onchange="update()">
     </div>
+
+    <div class="inputContainer">
+        <p>Light U: </p>
+        <input type="range" name="lightU" id="lightU" min="0" max="360" step="1" value="0" oninput="draw()">
+    </div>
+
+    <div class="inputContainer">
+        <p>Light V: </p>
+        <input type="range" name="lightV" id="lightV" min="0" max="360" step="1" value="0" oninput="draw()">
+    </div>
+
     <div id="canvas-holder" style="position: relative">
         <canvas width="700" height="700" id="webglcanvas"></canvas>
         <button id="zoomIn" style="position: absolute; bottom: 10px; right: 10px; width: 35px;">+</button>
         <button id="zoomOut" style="position: absolute; bottom: 10px; right: 50px; width: 35px;">-</button>
     </div>
 
-
     <script src="./Utils/trackball-rotator.js"></script>
     <script src="./Utils/m4.js"></script>
-    <script src="./shader.gpu"></script>
+    <script src="./shader.glsl"></script>
     <script src="./main.js"></script>
     <script src="./model.js"></script>
+    <script src="./light.js"></script>
+    <script src="./light.glsl"></script>
 </body>
 
 </html>

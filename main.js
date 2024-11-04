@@ -2,7 +2,9 @@
 
 let gl;                         // The webgl context.
 let surface;                    // A surface model
+let lightSurface;               // A light surface model
 let shProgram;                  // A shader program
+let shLightProgram;             // A light shader program
 let spaceball;                  // A SimpleRotator object that lets the user rotate the view by mouse.
 
 let zoomFactor = -10;
@@ -19,13 +21,10 @@ function ShaderProgram(name, program) {
     this.name = name;
     this.prog = program;
 
-    // Location of the attribute variable in the shader program.
     this.iAttribVertex = -1;
-    // Location of the uniform specifying a color for the primitive.
-    this.iColor = -1;
-    // Location of the uniform matrix representing the combined transformation.
-    this.iModelViewProjectionMatrix = -1;
-
+    this.iProjectionMatrix = -1
+    this.iModelMatrix = -1
+    
     this.Use = function() {
         gl.useProgram(this.prog);
     }
@@ -36,43 +35,59 @@ function draw() {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    /* Set the values of the projection transformation */
+    let lightLocation = lightSurface.getLocation();
+
     let projection = m4.perspective(Math.PI / 8, 1, 0.1, 100);
-
-    /* Get the view matrix from the SimpleRotator object. */
-    let modelView = spaceball.getViewMatrix();
-
+    let trackballView = spaceball.getViewMatrix();
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
     let translateToPointZero = m4.translation(0, 0, zoomFactor);
 
-    let matAccum0 = m4.multiply(rotateToPointZero, modelView);
-    let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
+    let modelMatrix = m4.multiply(translateToPointZero, m4.multiply(rotateToPointZero, trackballView));
+    
+    let lightModel = m4.translation(lightLocation[0], lightLocation[1], lightLocation[2]);
+    lightModel = m4.multiply(trackballView, lightModel);
+    lightModel = m4.multiply(rotateToPointZero, lightModel);
+    lightModel = m4.multiply(translateToPointZero, lightModel);
 
-    /* Multiply the projection matrix times the modelview matrix to give the
-       combined transformation matrix, and send that to the shader program. */
-    let modelViewProjection = m4.multiply(projection, matAccum1);
+    shProgram.Use();
 
-    gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection);
+    gl.uniformMatrix4fv(shProgram.iModelMatrix, false, modelMatrix);
+    gl.uniformMatrix4fv(shProgram.iProjectionMatrix, false, projection);
+    gl.uniform4fv(shProgram.iLightLocation, m4.transformVector(lightModel, [0.0, 0.0, 0.0, 1.0], []));        
+    gl.uniform3fv(shProgram.iColor, [1.0, 0.5, 0.2]);
 
-    /* Set the color */
-    gl.uniform4fv(shProgram.iColor, [1, 1, 0, 1]);
+    surface.Draw();
 
-    surface.Draw();  // Draw the model
+    shLightProgram.Use();
+
+    gl.uniformMatrix4fv(shLightProgram.iModelMatrix, false, lightModel);
+    gl.uniformMatrix4fv(shLightProgram.iProjectionMatrix, false, projection);
+    lightSurface.Draw();
 }
 
 /* Initialize the WebGL context */
 function initGL() {
     let prog = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+    let progLight = createProgram(gl, vertexLightShaderSource, fragmentLightShaderSource);
 
     shProgram = new ShaderProgram('Basic', prog);
-    shProgram.Use();
+    shLightProgram = new ShaderProgram('Light', progLight);
 
-    shProgram.iAttribVertex = gl.getAttribLocation(prog, "vertex");
-    shProgram.iModelViewProjectionMatrix = gl.getUniformLocation(prog, "ModelViewProjectionMatrix");
+    shProgram.iAttribVertex = gl.getAttribLocation(prog, "in_vertex");
+    shProgram.iAttribNormal = gl.getAttribLocation(prog, "in_normal");
+    shProgram.iModelMatrix = gl.getUniformLocation(prog, "model");
+    shProgram.iProjectionMatrix = gl.getUniformLocation(prog, "projection");
+    shProgram.iLightLocation = gl.getUniformLocation(prog, "light_location");
     shProgram.iColor = gl.getUniformLocation(prog, "color");
+
+    shLightProgram.iAttribVertex = gl.getAttribLocation(progLight, "in_vertex");
+    shLightProgram.iProjectionMatrix = gl.getUniformLocation(progLight, "projection");;
+    shLightProgram.iModelMatrix = gl.getUniformLocation(progLight, "model");
 
     surface = new Model('Surface');
     surface.CreateSurfaceData();
+
+    lightSurface = new Light();
 
     gl.enable(gl.DEPTH_TEST);
 }
@@ -123,7 +138,7 @@ function init() {
     let canvas;
     try {
         canvas = document.getElementById("webglcanvas");
-        gl = canvas.getContext("webgl");
+        gl = canvas.getContext("webgl2");
         if (!gl) {
             throw "Browser does not support WebGL";
         }
