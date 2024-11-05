@@ -41,7 +41,7 @@ function Model() {
         let vectorA = m4.normalize(m4.subtractVectors(b, a, []), []);
         let vectorB = m4.normalize(m4.subtractVectors(c, a, []), []);
         let normal = m4.cross(vectorA, vectorB, []);
-        console.log(normal)
+
         return normal;
     }
 

@@ -1,55 +1,55 @@
 function Light() {
     this.iVertexBuffer = gl.createBuffer();
     
-    let haflSize = 0.06;
+    let halfSize = 0.06;
     let vertices = [
         // Front face
-        -haflSize, -haflSize,  haflSize,  // Bottom-left
-         haflSize, -haflSize,  haflSize,  // Bottom-right
-         haflSize,  haflSize,  haflSize,  // Top-right
-         haflSize,  haflSize,  haflSize,  // Top-right
-        -haflSize,  haflSize,  haflSize,  // Top-left
-        -haflSize, -haflSize,  haflSize,  // Bottom-left
+        -halfSize, -halfSize,  halfSize,  // Bottom-left
+         halfSize, -halfSize,  halfSize,  // Bottom-right
+         halfSize,  halfSize,  halfSize,  // Top-right
+         halfSize,  halfSize,  halfSize,  // Top-right
+        -halfSize,  halfSize,  halfSize,  // Top-left
+        -halfSize, -halfSize,  halfSize,  // Bottom-left
 
         // Back face
-        -haflSize, -haflSize, -haflSize,  // Bottom-left
-        -haflSize,  haflSize, -haflSize,  // Top-left
-         haflSize,  haflSize, -haflSize,  // Top-right
-         haflSize,  haflSize, -haflSize,  // Top-right
-         haflSize, -haflSize, -haflSize,  // Bottom-right
-        -haflSize, -haflSize, -haflSize,  // Bottom-left
+        -halfSize, -halfSize, -halfSize,  // Bottom-left
+        -halfSize,  halfSize, -halfSize,  // Top-left
+         halfSize,  halfSize, -halfSize,  // Top-right
+         halfSize,  halfSize, -halfSize,  // Top-right
+         halfSize, -halfSize, -halfSize,  // Bottom-right
+        -halfSize, -halfSize, -halfSize,  // Bottom-left
 
         // Left face
-        -haflSize,  haflSize,  haflSize,  // Top-right
-        -haflSize,  haflSize, -haflSize,  // Top-left
-        -haflSize, -haflSize, -haflSize,  // Bottom-left
-        -haflSize, -haflSize, -haflSize,  // Bottom-left
-        -haflSize, -haflSize,  haflSize,  // Bottom-right
-        -haflSize,  haflSize,  haflSize,  // Top-right
+        -halfSize,  halfSize,  halfSize,  // Top-right
+        -halfSize,  halfSize, -halfSize,  // Top-left
+        -halfSize, -halfSize, -halfSize,  // Bottom-left
+        -halfSize, -halfSize, -halfSize,  // Bottom-left
+        -halfSize, -halfSize,  halfSize,  // Bottom-right
+        -halfSize,  halfSize,  halfSize,  // Top-right
 
         // Right face
-        haflSize,  haflSize,  haflSize,  // Top-left
-        haflSize, -haflSize, -haflSize,  // Bottom-right
-        haflSize,  haflSize, -haflSize,  // Top-right
-        haflSize, -haflSize, -haflSize,  // Bottom-right
-        haflSize,  haflSize,  haflSize,  // Top-left
-        haflSize, -haflSize,  haflSize,  // Bottom-left
+        halfSize,  halfSize,  halfSize,  // Top-left
+        halfSize, -halfSize, -halfSize,  // Bottom-right
+        halfSize,  halfSize, -halfSize,  // Top-right
+        halfSize, -halfSize, -halfSize,  // Bottom-right
+        halfSize,  halfSize,  halfSize,  // Top-left
+        halfSize, -halfSize,  halfSize,  // Bottom-left
 
         // Top face
-        -haflSize,  haflSize, -haflSize,  // Top-left
-         haflSize,  haflSize, -haflSize,  // Top-right
-         haflSize,  haflSize,  haflSize,  // Bottom-right
-         haflSize,  haflSize,  haflSize,  // Bottom-right
-        -haflSize,  haflSize,  haflSize,  // Bottom-left
-        -haflSize,  haflSize, -haflSize,  // Top-left
+        -halfSize,  halfSize, -halfSize,  // Top-left
+         halfSize,  halfSize, -halfSize,  // Top-right
+         halfSize,  halfSize,  halfSize,  // Bottom-right
+         halfSize,  halfSize,  halfSize,  // Bottom-right
+        -halfSize,  halfSize,  halfSize,  // Bottom-left
+        -halfSize,  halfSize, -halfSize,  // Top-left
 
         // Bottom face
-        -haflSize, -haflSize, -haflSize,  // Top-right
-        -haflSize, -haflSize,  haflSize,  // Top-left
-         haflSize, -haflSize,  haflSize,  // Bottom-right
-         haflSize, -haflSize,  haflSize,  // Bottom-right
-         haflSize, -haflSize, -haflSize,  // Bottom-left
-        -haflSize, -haflSize, -haflSize   // Top-right
+        -halfSize, -halfSize, -halfSize,  // Top-right
+        -halfSize, -halfSize,  halfSize,  // Top-left
+         halfSize, -halfSize,  halfSize,  // Bottom-right
+         halfSize, -halfSize,  halfSize,  // Bottom-right
+         halfSize, -halfSize, -halfSize,  // Bottom-left
+        -halfSize, -halfSize, -halfSize   // Top-right
     ];
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
