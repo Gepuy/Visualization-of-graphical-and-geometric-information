@@ -1,20 +1,22 @@
 'use strict';
+import Light from "./light.mjs";
+import Model from "./model.mjs";
+import TrackballRotator from "./Utils/trackball-rotator.mjs";
 
 let gl;                         // The webgl context.
 let surface;                    // A surface model
 let lightSurface;               // A light surface model
 let shProgram;                  // A shader program
 let shLightProgram;             // A light shader program
-let spaceball;                  // A SimpleRotator object that lets the user rotate the view by mouse.
+let spaceball;    
+         
 
 let zoomFactor = -10;
 const zoomStep = 1;
 const zoomIn = document.getElementById('zoomIn');
 const zoomOut = document.getElementById('zoomOut');
-
-function deg2rad(angle) {
-    return angle * Math.PI / 180;
-}
+let lightU = document.getElementById('lightU').value;
+let lightV = document.getElementById('lightV').value;  
 
 // Constructor for ShaderProgram
 function ShaderProgram(name, program) {
@@ -32,10 +34,12 @@ function ShaderProgram(name, program) {
 
 /* Draws the scene */
 function draw() {
+
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    let lightLocation = lightSurface.getLocation();
+
+    let lightLocation = lightSurface.getLocation(lightU, lightV);
 
     let projection = m4.perspective(Math.PI / 8, 1, 0.1, 100);
     let trackballView = spaceball.getViewMatrix();
@@ -84,10 +88,10 @@ function initGL() {
     shLightProgram.iProjectionMatrix = gl.getUniformLocation(progLight, "projection");;
     shLightProgram.iModelMatrix = gl.getUniformLocation(progLight, "model");
 
-    surface = new Model('Surface');
+    surface = new Model(gl, shProgram);
     surface.CreateSurfaceData();
 
-    lightSurface = new Light();
+    lightSurface = new Light(gl, shLightProgram, lightU, lightV);
 
     gl.enable(gl.DEPTH_TEST);
 }
@@ -118,6 +122,11 @@ function createProgram(gl, vShader, fShader) {
     return prog;
 }
 
+function update(){
+    surface.CreateSurfaceData();
+    draw();
+}
+
 zoomIn.addEventListener('click', () => {
     zoomFactor += zoomStep;
     draw();
@@ -128,10 +137,20 @@ zoomOut.addEventListener('click', () => {
     draw();
 });
 
-function update(){
-    surface.CreateSurfaceData();
+document.getElementById('lightU').addEventListener('input', (event) => {
+    lightU = parseFloat(event.target.value);
+ 
     draw();
-}
+});
+
+document.getElementById('lightV').addEventListener('input', (event) => {
+    lightV = parseFloat(event.target.value);
+
+    draw();
+});
+
+document.getElementById('circleCount').addEventListener('change', update);
+document.getElementById('segmentsCount').addEventListener('change', update);
 
 /* Initialize the app */
 function init() {
@@ -159,3 +178,5 @@ function init() {
 
     draw();
 }
+
+document.addEventListener("DOMContentLoaded", init);

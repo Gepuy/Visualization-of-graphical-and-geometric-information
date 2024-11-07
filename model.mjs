@@ -1,4 +1,5 @@
-function Model() {
+export default function Model(gl, shProgram) {
+    this.gl = gl;
     this.iVertexBuffer = gl.createBuffer();
     this.count = 0;
     this.type = gl.TRIANGLES;

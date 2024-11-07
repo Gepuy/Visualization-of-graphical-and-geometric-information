@@ -1,4 +1,4 @@
-function Light() {
+export default function Light(gl, shLightProgram,) {
     this.iVertexBuffer = gl.createBuffer();
     
     let halfSize = 0.06;
@@ -62,9 +62,9 @@ function Light() {
         gl.drawArrays(gl.TRIANGLES, 0, 36);
     }
 
-    this.getLocation = function() {
-        let U = parseInt(document.getElementById('lightU').value) / 180.0;
-        let V = parseInt(document.getElementById('lightV').value) / 180.0;
+    this.getLocation = function(lightU, lightV) {
+        let U = lightU / 180.0;
+        let V = lightV / 180.0;
         let distance = 2.0;
 
         const pi = Math.PI;
