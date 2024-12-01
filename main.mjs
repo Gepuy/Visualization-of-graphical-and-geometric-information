@@ -58,8 +58,10 @@ function draw() {
     gl.uniformMatrix4fv(shProgram.iModelMatrix, false, modelMatrix);
     gl.uniformMatrix4fv(shProgram.iProjectionMatrix, false, projection);
     gl.uniform4fv(shProgram.iLightLocation, m4.transformVector(lightModel, [0.0, 0.0, 0.0, 1.0], []));        
-    gl.uniform3fv(shProgram.iColor, [1.0, 0.5, 0.2]);
-
+    gl.uniform1i(shProgram.iDiffuseTexture, 0);
+    gl.uniform1i(shProgram.iNormalTexture, 1);
+    gl.uniform1i(shProgram.iSpecularTexture, 2);
+    
     surface.Draw();
 
     shLightProgram.Use();
@@ -78,11 +80,16 @@ function initGL() {
     shLightProgram = new ShaderProgram('Light', progLight);
 
     shProgram.iAttribVertex = gl.getAttribLocation(prog, "in_vertex");
-    shProgram.iAttribNormal = gl.getAttribLocation(prog, "in_normal");
+    shProgram.iAttribUV = 1;
+    shProgram.iAttribTangent = 2;
+    shProgram.iAttribBitangent = 3;
     shProgram.iModelMatrix = gl.getUniformLocation(prog, "model");
     shProgram.iProjectionMatrix = gl.getUniformLocation(prog, "projection");
     shProgram.iLightLocation = gl.getUniformLocation(prog, "light_location");
-    shProgram.iColor = gl.getUniformLocation(prog, "color");
+    
+    shProgram.iDiffuseTexture = gl.getUniformLocation(prog, "diffuse_texture");
+    shProgram.iNormalTexture = gl.getUniformLocation(prog, "normal_texture");
+    shProgram.iSpecularTexture = gl.getUniformLocation(prog, "specular_texture");
 
     shLightProgram.iAttribVertex = gl.getAttribLocation(progLight, "in_vertex");
     shLightProgram.iProjectionMatrix = gl.getUniformLocation(progLight, "projection");;
@@ -151,6 +158,7 @@ document.getElementById('lightV').addEventListener('input', (event) => {
 
 document.getElementById('circleCount').addEventListener('change', update);
 document.getElementById('segmentsCount').addEventListener('change', update);
+document.addEventListener('draw', draw)
 
 /* Initialize the app */
 function init() {
