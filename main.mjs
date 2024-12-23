@@ -2,6 +2,7 @@
 import Light from "./light.mjs";
 import Model from "./model.mjs";
 import TrackballRotator from "./Utils/trackball-rotator.mjs";
+import TexCoordDrawer from "./TexCoord.mjs";
 
 let gl;                         // The webgl context.
 let surface;                    // A surface model
@@ -9,6 +10,7 @@ let lightSurface;               // A light surface model
 let shProgram;                  // A shader program
 let shLightProgram;             // A light shader program
 let spaceball;    
+let uvDrawer;
          
 
 let zoomFactor = -10;
@@ -69,6 +71,8 @@ function draw() {
     gl.uniformMatrix4fv(shLightProgram.iModelMatrix, false, lightModel);
     gl.uniformMatrix4fv(shLightProgram.iProjectionMatrix, false, projection);
     lightSurface.Draw();
+
+    uvDrawer.draw();
 }
 
 /* Initialize the WebGL context */
@@ -80,9 +84,9 @@ function initGL() {
     shLightProgram = new ShaderProgram('Light', progLight);
 
     shProgram.iAttribVertex = gl.getAttribLocation(prog, "in_vertex");
-    shProgram.iAttribUV = 1;
+    shProgram.iAttribNormal = 1;
     shProgram.iAttribTangent = 2;
-    shProgram.iAttribBitangent = 3;
+    shProgram.iAttribUV = 3;
     shProgram.iModelMatrix = gl.getUniformLocation(prog, "model");
     shProgram.iProjectionMatrix = gl.getUniformLocation(prog, "projection");
     shProgram.iLightLocation = gl.getUniformLocation(prog, "light_location");
@@ -90,6 +94,9 @@ function initGL() {
     shProgram.iDiffuseTexture = gl.getUniformLocation(prog, "diffuse_texture");
     shProgram.iNormalTexture = gl.getUniformLocation(prog, "normal_texture");
     shProgram.iSpecularTexture = gl.getUniformLocation(prog, "specular_texture");
+
+    shProgram.iPoint = gl.getUniformLocation(prog, "point");
+    shProgram.iAngle = gl.getUniformLocation(prog, "angle");
 
     shLightProgram.iAttribVertex = gl.getAttribLocation(progLight, "in_vertex");
     shLightProgram.iProjectionMatrix = gl.getUniformLocation(progLight, "projection");;
@@ -101,6 +108,9 @@ function initGL() {
     lightSurface = new Light(gl, shLightProgram, lightU, lightV);
 
     gl.enable(gl.DEPTH_TEST);
+
+    uvDrawer = new TexCoordDrawer(surface);
+    uvDrawer.init();
 }
 
 /* Creates a program */
@@ -131,6 +141,7 @@ function createProgram(gl, vShader, fShader) {
 
 function update(){
     surface.CreateSurfaceData();
+    uvDrawer.update();
     draw();
 }
 
@@ -158,6 +169,7 @@ document.getElementById('lightV').addEventListener('input', (event) => {
 
 document.getElementById('circleCount').addEventListener('change', update);
 document.getElementById('segmentsCount').addEventListener('change', update);
+document.getElementById('Angle').addEventListener('input', draw);
 document.addEventListener('draw', draw)
 
 /* Initialize the app */
